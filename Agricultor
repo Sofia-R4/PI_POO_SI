@@ -1,0 +1,57 @@
+/**
+ * @author 51301 Beatriz Antunes
+ */
+
+import java.util.ArrayList;
+
+public class Agricultor extends Utilizador {
+	private String biografia;
+	private String localizacao;
+	private boolean certificado;
+	private ArrayList<Produto>produtos;
+	
+	public Agricultor(String nome, String email, String password, String biografia, String localizacao,
+			boolean certificado) {
+		super(nome, email, password);
+		this.biografia = biografia;
+		this.localizacao = localizacao;
+		this.certificado = certificado;
+		produtos = new ArrayList<Produto>();
+	}
+
+	public void registarProduto(Produto produto) {
+		produtos.add(produto);
+		}
+	
+	public void ocultarProduto(Produto produto) {
+		produtos.remove(produto);
+		}
+	
+	public ArrayList<Produto> gets() {
+		return produtos;
+		}
+	
+	public void setLocalizacao(String localizacao) {
+		this.localizacao = localizacao;
+		}
+	
+	public void setBiografia(String biografia) {
+		this.biografia = biografia;
+		}
+	
+	public void setCertificado(boolean certificado) {
+		this.certificado = certificado;
+		}
+	
+	public String getBiografia() {
+		return biografia;
+		}
+	
+	public String getLocalizacao() {
+		return localizacao;
+		}
+	
+	public boolean isCertificado() {
+		return certificado;
+		}
+}
