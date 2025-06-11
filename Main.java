@@ -1,10 +1,16 @@
 package projetoJunto;
+
 import java.util.Scanner;
 
 public class Main {
 
 	public static void main(String[] args) {
         Mercado mercado = new Mercado();
+        Agricultor andre = new Agricultor("André","andre@gmail.com","andre123","Gosto de sapos","Custoias","Certificado de bom agricultor");
+        mercado.registarUtilizador(andre, "André");
+        Produto produtoG = new Produto("Bananas","Amarelas e ricas em Vitamina A","Criado sem adubos");
+        ProdutoAgricultor produtoA = new ProdutoAgricultor(produtoG,andre,2,5);
+        andre.registarProduto(produtoA);
         Scanner ler = new Scanner(System.in);
         System.out.println("Escolha uma das seguintes opções: ");
         System.out.println("1-Registar Utilizador");
@@ -50,7 +56,7 @@ public class Main {
             		System.out.println("O utilizador foi registado!");
             		break;
             	}
-            }
+            } // fim opcao registo
             else{
             	if(opcao == 2) {
             		System.out.println("Login");
@@ -72,16 +78,145 @@ public class Main {
             					mercado.listarTipoUtilizador("Agricultor");
             					break;
             				case 2:
-            					break;
-            				}
+            					System.out.println("Início da compra. Adicione produtos ao carrinho.");
+								Cliente clienteAtual = (Cliente) mercado.pesquisarUtilizador(nome2);
+								boolean continuarCompras = true;
+
+								while (continuarCompras) {
+									System.out.println("\n Menu Compras");
+									System.out.println("1 - Adiconar ao carrinho");
+									System.out.println("2 - Remover do carrinho");
+									System.out.println("3 - Ver carrinho");
+									System.out.println("4 - Finalizar compra");
+									System.out.println("5 - Cancelar compra");
+									System.out.println("0 - Voltar");
+									System.out.print("Escolha uma opção: ");
+
+									int opcaoCompra = ler.nextInt();
+									ler.nextLine(); // Limpar buffer
+
+									switch (opcaoCompra) {
+									case 1:
+										System.out.print("Introduza o nome do produto: ");
+										String nomeProd = ler.nextLine();
+										Produto produtoBase = mercado.pesquisarProduto(nomeProd);
+
+										if (produtoBase != null) {
+											System.out.println("Agricultores que vendem este produto:");
+											for (Agricultor agricultor : produtoBase.getAgricultores()) {
+												ProdutoAgricultor produtoAgricultor = agricultor
+														.pesquisarProdutoAgricultor(nomeProd);
+												if (produtoAgricultor != null && produtoAgricultor.getStock() > 0) {
+													System.out.println("Agricultor : " + agricultor.getNomeU()
+															+ " | Preço: " + produtoAgricultor.getPreco() + " | Stock: "
+															+ produtoAgricultor.getStock());
+												}
+											}
+
+											System.out.print("Introduza o nome do agricultor desejado: ");
+											String nomeAgricultor = ler.nextLine();
+											Agricultor agricultorSelecionado = produtoBase
+													.pesquisarAgricultor(nomeAgricultor);
+
+											if (agricultorSelecionado != null) {
+												ProdutoAgricultor produtoFinal = agricultorSelecionado
+														.pesquisarProdutoAgricultor(nomeProd);
+
+												if (produtoFinal != null && produtoFinal.getStock() > 0) {
+													System.out
+															.print("Introduza a quantidade a adicionar ao carrinho: ");
+													int quantidade = ler.nextInt();
+													ler.nextLine(); // limpar o buffer
+													
+													if (quantidade > 0 && quantidade <= produtoFinal.getStock()) {
+														boolean adicionado = mercado.adicionarAoCarrinho((Cliente)mercado.pesquisarUtilizador(nome2),
+																produtoFinal, quantidade);
+
+														if (adicionado) {
+															System.out.println(
+																	"Produto adicionado ao carrinho com sucesso!");
+														} else {
+															System.out
+																	.println("Falha ao adicionar produto ao carrinho.");
+														}
+													} else {
+														System.out.println("Quantidade inválida. Stock disponível: "
+																+ produtoFinal.getStock());
+													}
+												} else {
+													System.out.println(
+															"Este agricultor não tem stock disponível para este produto.");
+												}
+
+											} else {
+												System.out.println("Agricultor não existe");
+											}
+										} else {
+											System.out.println("Produto não encontrado no mercado");
+										}
+										break;
+									case 2:
+										mercado.listarCarrinho(clienteAtual);
+										if (!clienteAtual.getCarrinho().isEmpty()) {
+											System.out.print("Introduza o indice do produto a remover: ");
+											int index = ler.nextInt();
+
+											if (mercado.removerDoCarrinho(clienteAtual, index)) {
+												System.out.println("Produto removido do carrinho");
+											} else {
+												System.out.println("Índice inválido");
+											}
+										}
+										break;
+
+									case 3:
+										mercado.listarCarrinho(clienteAtual);
+										break;
+
+									case 4:
+										mercado.listarCarrinho(clienteAtual);
+										if (!clienteAtual.getCarrinho().isEmpty()) {
+											System.out.print("Deseja confirmar a compra?(Sim/Não) ");
+											String confirmacao = ler.next();
+
+											if (confirmacao.equalsIgnoreCase("Sim")) {
+												if (mercado.finalizarCompra(clienteAtual)) {
+													System.out.println("Compra finalizada");
+												} else {
+													System.out.println("Erro");
+												}
+												continuarCompras = false;
+											}
+										}
+										break;
+
+									case 5:
+										System.out.print("Tem certeza que quer cancelar a compra?(Sim/Não) ");
+										String confirmacao = ler.next();
+
+										if (confirmacao.equalsIgnoreCase("Sim")) {
+											mercado.cancelarCompra(clienteAtual);
+											System.out.println("Compra cancelada com sucesso");
+											continuarCompras = false;
+										}
+										break;
+
+									case 0:
+										continuarCompras = false;
+										break;
+									default:
+										System.out.println("Opção inválida!");
+									}// fim opcao compra
+								} // while
+            				}// fim switch 
             				System.out.println("Introduza uma opção");
                 			System.out.println("1-Listar agricultores");
                 			System.out.println("2-Comprar produtos");
                 			System.out.println("0-Sair");
                 			opcao6 = ler.nextInt();
-            			}
+            				} // fim while menu cliente - op 1 e 2
             			break;
-            		case "Agricultor":
+            			case "Agricultor":
             			System.out.println("Introduza uma opção");
             			System.out.println("1-Registar produto");
             			System.out.println("2-Ocultar produto");
@@ -92,55 +227,77 @@ public class Main {
             			while(opcao3 != 0) {
             				switch (opcao3){
             				case 1 :
-            					String emailAgricultor = mercado.pesquisarUtilizador(nome2).getEmail();
+            					//String emailAgricultor = mercado.pesquisarUtilizador(nome2).getEmail();
                                 System.out.print("Nome do produto: ");
                                 String nomeProduto = ler.nextLine();
-                                System.out.print("Preço do produto: ");
-                                double preco = ler.nextDouble();
-                                ler.nextLine();
-                                System.out.print("Categoria do produto: ");
-                                String categoria = ler.nextLine();
-                                System.out.print("Origem do produto: ");
-                                String origem = ler.nextLine();
-                                System.out.print("Condições do produto: ");
-                                String condicoes = ler.nextLine();
-                                System.out.print("Indique o tipo de produto (peso/quantidade/volume): ");
-                                String tipo = ler.nextLine();
-
-                                Produto produto;
-                                if (tipo.equalsIgnoreCase("peso")) {
-                                    System.out.print("Indique o  peso: ");
-                                    double peso = ler.nextDouble();
-                                    ler.nextLine();
-                                    produto = new ProdutoPeso(nomeProduto, preco, categoria, origem, condicoes, peso);
-                                } else if (tipo.equalsIgnoreCase("quantidade")) {
-                                    System.out.print("Indique a quantidade: ");
-                                    int quantidade = ler.nextInt();
-                                    ler.nextLine();
-                                    produto = new ProdutoQuantidade(nomeProduto, preco, categoria, origem, condicoes, quantidade);
-                                } else if (tipo.equalsIgnoreCase("volume")) {
-                                    System.out.print("Indique o volume: ");
-                                    double volume = ler.nextDouble();
-                                    ler.nextLine();
-                                    produto = new ProdutoVolume(nomeProduto, preco, categoria, origem, condicoes, volume);
-                                } else {
-                                    System.out.println("O tipo de produto é invalido");
-                                    break;
+                                Produto p=mercado.pesquisarProduto(nomeProduto);
+                                Produto produto = null;
+                                if(p==null) {// adicionar produto à lista de produtos
+                                	System.out.println("Introduza uma breve descrição: ");
+                                	String descricao = ler.next();
+                                	System.out.println("Introduza as condições a que foi criado o produto: ");
+                                	String condicao = ler.next();
+                                	produto = new Produto(nomeProduto,descricao,condicao);
+                                	mercado.adicionarProduto(produto);
                                 }
+                                // adicionar produto ao agricultor
+                                	System.out.print("Indique como pretende vender o de produto (peso/quantidade/volume): ");
+                                    String tipo = ler.next();
 
-                                mercado.registarProduto(emailAgricultor, produto);
-                                break;
+                                    ProdutoAgricultor produtoP = null;
+                                    if (tipo.equalsIgnoreCase("peso")) {
+                                        System.out.print("Indique o  peso: ");
+                                        double peso = ler.nextDouble();
+                                        System.out.println("Indique o stock: ");
+                                        int stock = ler.nextInt();
+                                        System.out.println("Indique o preco ao kilo: ");
+                                        double preco = ler.nextDouble();
+                                        ler.nextLine();
+                                        produtoP = new ProdutoPeso(produto,mercado.pesquisarUtilizador(nome2),stock,preco,peso);
+                                    } else if (tipo.equalsIgnoreCase("quantidade")) {
+                                        System.out.print("Indique a quantidade: ");
+                                        int quantidade = ler.nextInt();
+                                        ler.nextLine();
+                                        System.out.println("Indique o stock: ");
+                                        int stock = ler.nextInt();
+                                        System.out.println("Indique o preco à unidade: ");
+                                        double preco = ler.nextDouble();
+                                        ler.nextLine();
+                                        produtoP = new ProdutoQuantidade(produto,mercado.pesquisarUtilizador(nome2),stock,preco,quantidade);
+                                    } else if (tipo.equalsIgnoreCase("volume")) {
+                                        System.out.print("Indique o volume: ");
+                                        double volume = ler.nextDouble();
+                                        ler.nextLine();
+                                        System.out.println("Indique o stock: ");
+                                        int stock = ler.nextInt();
+                                        System.out.println("Indique o preco por dm^3: ");
+                                        double preco = ler.nextDouble();
+                                        ler.nextLine();
+                                        produtoP = new ProdutoVolume(produto,mercado.pesquisarUtilizador(nome2),stock,preco,volume);
+                                    } else {
+                                        System.out.println("O tipo de produto é invalido");
+                                    }
+                                    
+                                	mercado.adicionarProdutoAgricultor((Agricultor)mercado.pesquisarUtilizador(nome2), produtoP);
+                                	break;
             				case 2:
             					String emailAgri = mercado.pesquisarUtilizador(nome2).getEmail();
-                                System.out.print("Indique o produto que quer ocultar: ");
-                                String nomeProd = ler.nextLine();
-                                Produto prod = mercado.pesquisarProduto(nomeProd);
-                                if (prod != null) {
-                                    mercado.ocultarProduto(emailAgri, prod);
-                                } else {
-                                    System.out.println("Produto não encontrado.");
-                                }
-                                break;
+								System.out.print("Indique o produto que quer ocultar: ");
+								String nomeProd = ler.nextLine();
+								Produto prod = mercado.pesquisarProduto(nomeProd);
+								if (prod != null) {
+									for (Agricultor agricultor : prod.getAgricultores()) {
+										ProdutoAgricultor produtoAgricultor = agricultor
+												.pesquisarProdutoAgricultor(nomeProd);
+										if(produtoAgricultor != null) {
+											mercado.ocultarProduto(emailAgri,produtoAgricultor);
+											}
+									}
+								} 
+								else {
+									System.out.println("Produto não encontrado.");
+								}
+								break;
             				case 3:
             					mercado.listarProdutos();
                                 break;
@@ -168,6 +325,11 @@ public class Main {
             					mercado.listarUtilizadores();
             					break;
             				case 2:
+            					System.out.println("Introduza o nome do agricultor que pretende aprovar: ");
+            					String nomeU = ler.next();
+            					String password3 = mercado.pesquisarUtilizador(nomeU).getPassword();
+            					mercado.verificarUtilizador(nomeU, password3);
+            					System.out.println("Agricultor arovado com sucesso!");
             					break;
             				}
             				System.out.println("Introduza uma opção");
@@ -185,15 +347,12 @@ public class Main {
             		System.out.println("Introduziu uma opção inválida!!!");
             		System.out.println("Tente novamente por favor");
             	}
-            	
-            }
+            	}//fim login
+         	
         	System.out.println("Escolha uma das seguintes opções: ");
-            System.out.println("1-Registar Utilizador");
             System.out.println("2-Login");
             System.out.println("0-Sair");
-            opcao = ler.nextInt(); 
-           
-        }
-        
-    }
+            opcao = ler.nextInt();     
+        }// fim opcao else - vai fazer login
+}
 }
