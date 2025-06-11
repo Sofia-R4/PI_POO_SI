@@ -1,35 +1,27 @@
-/**
- * 
- */
-package projetoInterdisciplinar;
+package projetoJunto;
 
-/**
- * 
- */
-public abstract class Utilizador {
+public class Utilizador {
 	//variáveis de instância
 	private String nomeU;
 	private String email;
 	private String password;
-	private String tipoUtilizador;
 	
 	// Método construtor - inicializar variavvéis de instância
 	/**
-	 * @param nome
+	 * @param nomeU
 	 * @param email
 	 * @param password
 	 */
-	public Utilizador(String nomeU, String email, String password, String tipoUtilizador) {
+	public Utilizador(String nomeU, String email, String password) {
 		this.nomeU = nomeU;
 		this.email = email;
 		this.password = password;
-		this.tipoUtilizador = tipoUtilizador;
 	}
 
 	/**
 	 * @return the nomeU
 	 */
-	public String getNome() {
+	public String getNomeU() {
 		return nomeU;
 	}
 
@@ -47,12 +39,9 @@ public abstract class Utilizador {
 		return password;
 	}
 
-	/**
-	 * @return the tipoUtilizador
-	 */
-	public String isTipoUtilizador() {
-		return tipoUtilizador;
+	@Override
+	public String toString() {
+		return "Utilizador [nomeU=" + nomeU + ", email=" + email + ", password=" + password + "]";
 	}
-
-
+	
 }

@@ -1,17 +1,14 @@
-
-package minhaParte;
+package projetoJunto;
 
 /**
  * @author andre
  * 21/05/2025
  */
- class ProdutoVolume extends Produto {
+ class ProdutoVolume extends ProdutoAgricultor {
 	 private double volume;
 
-
-	public ProdutoVolume(String nome, double preco, String categoria, String origem, String condicoesProduto,
-			double volume) {
-		super(nome, preco, categoria, origem, condicoesProduto);
+	public ProdutoVolume(Produto idProduto, Utilizador idAgricultor, int stock, double preco, double volume) {
+		super(idProduto, idAgricultor, stock, preco);
 		this.volume = volume;
 	}
 
@@ -31,7 +28,7 @@ package minhaParte;
 	 
 	public String toString() {
 		String a = super.toString();
-	    return a + " volume " + volume ;
+	    return a + " volume " + volume;
 	}
 
 }

@@ -1,16 +1,13 @@
-
-package minhaParte;
-
+package projetoJunto;
 /**
  * @author andre
  * 21/05/2025
  */
- class ProdutoPeso extends Produto {
+ class ProdutoPeso extends ProdutoAgricultor {
 	 private double peso;
 
-	public ProdutoPeso(String nome, double preco, String categoria, String origem, String condicoesProduto,
-			double peso) {
-		super(nome, preco, categoria, origem, condicoesProduto);
+	public ProdutoPeso(Produto idProduto, Utilizador idAgricultor, int stock, double preco, double peso) {
+		super(idProduto, idAgricultor, stock, preco);
 		this.peso = peso;
 	}
 
@@ -31,9 +28,11 @@ package minhaParte;
 	@Override
 	public String toString() {
 		String a = super.toString();
-	    return a + " peso " + peso ;
+	    return a + " peso " + peso;
+	}
+
+	public static double getPeso() {
+		return 0;
 	}
 	
-	
-	 
 }
